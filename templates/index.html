@@ -30,6 +30,10 @@
             <p>{{ post.content }}</p>
 
             <p class="post-actions">
+                <a href="{{ url_for('update', post_id=post.id) }}" style="color: blue; margin-right: 15px;">
+                    Update Post
+                </a>
+
                 <a href="{{ url_for('delete', post_id=post.id) }}" style="color: red;">
                     Delete Post
                 </a>
@@ -41,6 +45,5 @@
             <p>There are currently no blog posts to display. Click the "Add New Post" link above to get started!</p>
         </div>
     {% endfor %}
-
 </body>
 </html>
