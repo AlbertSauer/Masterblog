@@ -16,5 +16,11 @@
         "author": "Albert Sauer",
         "title": "My Masterblog Setup",
         "content": "Successfully configured the data structure and index route for my blog."
+    },
+    {
+        "id": 4,
+        "author": "Al",
+        "title": "Test",
+        "content": "Testing\r\n"
     }
 ]

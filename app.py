@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 
 app = Flask(__name__)
 
@@ -9,6 +9,7 @@ app = Flask(__name__)
 def load_blog_posts():
     """Reads the list of blog posts from posts.json."""
     try:
+        # Open the file and load the JSON data
         with open('posts.json', 'r') as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
@@ -39,21 +40,19 @@ def add():
     and processing the new post submission (POST).
     """
     if request.method == 'POST':
-        # 1. Load existing posts
         blog_posts = load_blog_posts()
 
-        # 2. Get data from the submitted form
+        # Get data from the submitted form
         author = request.form.get('author')
         title = request.form.get('title')
         content = request.form.get('content')
 
-        # 3. Generate a unique ID (max existing ID + 1, or 1 if list is empty)
+        # Generate a unique ID (max existing ID + 1, or 1 if list is empty)
         new_id = 1
         if blog_posts:
-            # Get the maximum existing ID and add 1
             new_id = max(post['id'] for post in blog_posts) + 1
 
-        # 4. Create the new post dictionary
+        # Create the new post dictionary
         new_post = {
             "id": new_id,
             "author": author,
@@ -61,18 +60,55 @@ def add():
             "content": content
         }
 
-        # 5. Add the new post to the list
         blog_posts.append(new_post)
-
-        # 6. Save the updated list back to the JSON file
         save_blog_posts(blog_posts)
 
-        # 7. Redirect to the homepage to see the new post
-        return redirect(url_for('index'))
+        # Redirect to the new post's page (or index)
+        return redirect(url_for('view_post', post_id=new_id))
 
-    # Handle GET request: just show the form
+        # Handle GET request: just show the form
     return render_template('add.html')
 
 
+@app.route('/post/<int:post_id>')
+def view_post(post_id):
+    """Displays a single blog post based on its ID."""
+    blog_posts = load_blog_posts()
+
+    # Use a generator expression to find the post efficiently
+    post = next((p for p in blog_posts if p['id'] == post_id), None)
+
+    if post is None:
+        # If the post is not found
+        abort(404)
+
+    return render_template('view_post.html', post=post)
+
+
+@app.route('/delete/<int:post_id>')
+def delete(post_id):
+    """Deletes a blog post with the given ID and redirects to the index."""
+
+    blog_posts = load_blog_posts()
+
+    # Find the index of the post to delete
+    post_index_to_delete = -1
+    for i, post in enumerate(blog_posts):
+        if post['id'] == post_id:
+            post_index_to_delete = i
+            break
+
+    if post_index_to_delete != -1:
+        # Remove the post from the list
+        blog_posts.pop(post_index_to_delete)
+
+        # Save the updated list back to the JSON file
+        save_blog_posts(blog_posts)
+
+    # Redirect back to the homepage
+    return redirect(url_for('index'))
+
+
 if __name__ == '__main__':
+    # Run the application in debug mode
     app.run(debug=True)
