@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "author": "John Doe",
+        "title": "First Post",
+        "content": "This is my first post. Welcome to the blog!"
+    },
+    {
+        "id": 2,
+        "author": "Jane Doe",
+        "title": "Second Post",
+        "content": "This is another post, demonstrating how the list of dictionaries works."
+    },
+    {
+        "id": 3,
+        "author": "Albert Sauer",
+        "title": "My Masterblog Setup",
+        "content": "Successfully configured the data structure and index route for my blog."
+    }
+]
